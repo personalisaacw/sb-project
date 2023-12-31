@@ -7,41 +7,60 @@ const ctx = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 600;
 
-// Player object
-const player = {
-  x: canvas.width / 2 - 50,
-  y: canvas.height - 50,
-  width: 100,
-  height: 50,
-  color: '#ff1493',
-  speed: 5,
-};
-
-// Heart object
-const heart = {
-  x: Math.random() * (canvas.width - 30),
-  y: 0,
-  radius: 15,
-  color: '#ff0000',
-  speed: 2,
-};
-
 // Score
 let score = 0;
 
-// Draw player
-function drawPlayer() {
-  ctx.fillStyle = player.color;
-  ctx.fillRect(player.x, player.y, player.width, player.height);
+// Hearts array
+const hearts = [];
+
+// Add event listener to track cursor position
+let cursorX = canvas.width / 2;
+document.addEventListener('mousemove', (e) => {
+  cursorX = e.clientX - canvas.getBoundingClientRect().left;
+});
+
+// Heart class
+class Heart {
+  constructor() {
+    this.x = Math.random() * (canvas.width - 30);
+    this.y = 0;
+    this.radius = 15;
+    this.color = '#ff0000';
+    this.speed = 2;
+  }
+
+  update() {
+    this.y += this.speed;
+
+    // Check collision with cursor
+    const distance = Math.sqrt((this.x - cursorX) ** 2 + (this.y - canvas.height) ** 2);
+    if (distance < this.radius) {
+      // Increase score and reset heart position
+      score++;
+      this.x = Math.random() * (canvas.width - 30);
+      this.y = 0;
+    }
+
+    // Check if heart reaches the bottom
+    if (this.y > canvas.height) {
+      // Reset heart position
+      this.x = Math.random() * (canvas.width - 30);
+      this.y = 0;
+    }
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.closePath();
+  }
 }
 
-// Draw heart
-function drawHeart() {
-  ctx.beginPath();
-  ctx.arc(heart.x, heart.y, heart.radius, 0, Math.PI * 2);
-  ctx.fillStyle = heart.color;
-  ctx.fill();
-  ctx.closePath();
+// Create initial hearts
+for (let i = 0; i < 5; i++) {
+  hearts.push(new Heart());
 }
 
 // Draw score
@@ -53,27 +72,8 @@ function drawScore() {
 
 // Update game objects
 function update() {
-  // Move heart
-  heart.y += heart.speed;
-
-  // Check collision
-  if (
-    heart.x > player.x &&
-    heart.x < player.x + player.width &&
-    heart.y > player.y &&
-    heart.y < player.y + player.height
-  ) {
-    // Increase score and reset heart position
-    score++;
-    heart.x = Math.random() * (canvas.width - 30);
-    heart.y = 0;
-  }
-
-  // Check if heart reaches the bottom
-  if (heart.y > canvas.height) {
-    // Reset heart position
-    heart.x = Math.random() * (canvas.width - 30);
-    heart.y = 0;
+  for (const heart of hearts) {
+    heart.update();
   }
 }
 
@@ -81,8 +81,10 @@ function update() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  drawPlayer();
-  drawHeart();
+  for (const heart of hearts) {
+    heart.draw();
+  }
+
   drawScore();
 }
 
@@ -92,15 +94,6 @@ function gameLoop() {
   draw();
   requestAnimationFrame(gameLoop);
 }
-
-// Handle player movement
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowLeft' && player.x > 0) {
-    player.x -= player.speed;
-  } else if (e.key === 'ArrowRight' && player.x < canvas.width - player.width) {
-    player.x += player.speed;
-  }
-});
 
 // Start the game loop
 gameLoop();
