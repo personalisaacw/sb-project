@@ -15,38 +15,25 @@ const hearts = [];
 
 // Add event listener to track cursor position
 let cursorX = canvas.width / 2;
+let cursorY = canvas.height / 2;
+
 document.addEventListener('mousemove', (e) => {
   cursorX = e.clientX - canvas.getBoundingClientRect().left;
+  cursorY = e.clientY - canvas.getBoundingClientRect().top;
 });
 
 // Heart class
 class Heart {
   constructor() {
     this.x = Math.random() * (canvas.width - 30);
-    this.y = 0;
+    this.y = Math.random() * (canvas.height - 30);
     this.radius = 15;
     this.color = '#ff0000';
-    this.speed = 2;
   }
 
-  update() {
-    this.y += this.speed;
-
-    // Check collision with cursor
-    const distance = Math.sqrt((this.x - cursorX) ** 2 + (this.y - canvas.height) ** 2);
-    if (distance < this.radius) {
-      // Increase score and reset heart position
-      score++;
-      this.x = Math.random() * (canvas.width - 30);
-      this.y = 0;
-    }
-
-    // Check if heart reaches the bottom
-    if (this.y > canvas.height) {
-      // Reset heart position
-      this.x = Math.random() * (canvas.width - 30);
-      this.y = 0;
-    }
+  isCursorInside() {
+    const distance = Math.sqrt((this.x - cursorX) ** 2 + (this.y - cursorY) ** 2);
+    return distance < this.radius;
   }
 
   draw() {
@@ -73,7 +60,12 @@ function drawScore() {
 // Update game objects
 function update() {
   for (const heart of hearts) {
-    heart.update();
+    if (heart.isCursorInside()) {
+      // Increase score and reset heart position
+      score++;
+      heart.x = Math.random() * (canvas.width - 30);
+      heart.y = Math.random() * (canvas.height - 30);
+    }
   }
 }
 
@@ -97,3 +89,9 @@ function gameLoop() {
 
 // Start the game loop
 gameLoop();
+
+// Handle mouse click events
+document.addEventListener('click', () => {
+  for (const heart of hearts) {
+    if (heart.isCursorInside()) {
+      // Incr
