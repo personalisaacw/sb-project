@@ -7,6 +7,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100vh;
+    color: #000;
 }
 
 .header {
@@ -16,4 +17,61 @@ body {
 
 .game-container {
     margin-top: 20px;
+    position: relative;
+    border: 2px solid #fff;
+    overflow: hidden;
+}
+
+.space-invaders {
+    width: 800px;
+    height: 600px;
+    background-color: #001f3f;
+    position: relative;
+}
+
+.spaceship {
+    position: absolute;
+    width: 40px;
+    height: 20px;
+    background-color: #ff6347;
+    border-radius: 5px;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.alien {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: #00ff00;
+    border-radius: 5px;
+}
+
+.bullet {
+    position: absolute;
+    width: 10px;
+    height: 20px;
+    background-color: #fff;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 16px;
+    color: #fff;
+}
+
+.controls {
+    margin-top: 20px;
+}
+
+button {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 0 10px;
 }
