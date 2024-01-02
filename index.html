@@ -11,11 +11,21 @@
         <h1>Happy Birthday Samantha!!!</h1>
         <p>January 29</p>
     </div>
-    
+
     <div class="game-container">
-        <canvas id="arcade-game"></canvas>
+        <div class="space-invaders" id="space-invaders">
+            <div class="spaceship" id="spaceship"></div>
+            <div class="aliens" id="aliens"></div>
+            <div class="bullets" id="bullets"></div>
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="lives" id="lives">Lives: 3</div> <!-- Added the ID for lives -->
+        </div>
+        <div class="controls">
+            <!-- You can remove the buttons for mouse control -->
+        </div>
     </div>
 
-    <script src="game.js"></script>
+    <script src="script.js"></script>
+    <script src="space-invaders.js"></script>
 </body>
 </html>
