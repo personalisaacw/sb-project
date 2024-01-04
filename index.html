@@ -4,24 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Great+Vibes&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Quicksand&display=swap">
     <title>Happy Birthday Samantha!!!</title>
 </head>
 <body>
-    <div class="header">
-        <h1>Happy Birthday Samantha!!!</h1>
-        <p>January 29</p>
+    <div class="start-container">
+        <h1 class="header">Happy Birthday Samantha!!!</h1>
+        <p class="date">January 29</p>
+        <p class="body-text">
+            I wanted to get you something for your birthday, but I didn't really 
+            know what to get since its hard for you to receive physical stuff. 
+            SO I DECIDED TO SPEND TIME CODING A HAPPY BIRTHDAY WEBSITE WOOOO. 
+            AND there is something special once you press START! I spent a lot of time 
+            trying to code this website, I am writing this at 7:29 pm January 2nd lol, so 
+            I really hope you enjoy. ILY ENJOYYYYY TEXT ME ABOUT IT WHEN YOURE  DONE LOL
+        </p>
+        <button id="startButton">START!</button>
     </div>
 
-    <div class="game-container">
+    <div class="game-container" id="gameContainer">
         <div class="space-invaders" id="space-invaders">
             <div class="spaceship" id="spaceship"></div>
             <div class="aliens" id="aliens"></div>
             <div class="bullets" id="bullets"></div>
             <div class="score">Score: <span id="score">0</span></div>
-            <div class="lives" id="lives">Lives: 3</div> <!-- Added the ID for lives -->
-        </div>
-        <div class="controls">
-            <!-- You can remove the buttons for mouse control -->
+            <div class="lives" id="lives">Lives: 3</div>
         </div>
     </div>
 
