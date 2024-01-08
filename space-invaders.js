@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', handleKeyDown);
 
     function createAliens(shape) {
+        clearAliens(); // Clear previous aliens
         switch (shape) {
             case 'pyramid':
                 createPyramidAliens();
@@ -58,71 +59,86 @@ document.addEventListener('DOMContentLoaded', function () {
                 break;
         }
     }
-    
-    function createPyramidAliens() {
-        const numRows = 5;
-        const numCols = 5;
-        const customStartX = spaceInvadersElement.clientWidth / 2; // Manually set the X coordinate
-        const startY = -150; // Adjust this value to control the initial vertical position
-    
-        for (let i = 0; i < numRows; i++) {
-            for (let j = 0; j <= i; j++) {
-                createAlien(customStartX + j * 40, startY + i * 40);
-                createAlien(customStartX - j * 40, startY + i * 40); // Mirror on the left
-            }
-        }
+
+    function clearAliens() {
+        aliens.forEach((alien) => alien.remove());
+        aliens = [];
     }
     
-    function createInvertedPyramidAliens() {
-        const numRows = 5;
-        const numCols = 5;
-        const customStartX = spaceInvadersElement.clientWidth / 2; // Manually set the X coordinate
-        const startY = -150; // Adjust this value to control the initial vertical position
-    
-        for (let i = 4; i >= 0; i--) {
-            for (let j = 0; j <= i; j++) {
-                createAlien(customStartX + j * 40, startY + (4 - i) * 40);
-                createAlien(customStartX - j * 40, startY + (4 - i) * 40); // Mirror on the left
-            }
+// Update createPyramidAliens function
+function createPyramidAliens() {
+    const numRows = 3;
+    const alienWidth = 70;
+    const alienHeight = 30;
+    const startX = (spaceInvadersElement.clientWidth / 2) - 20;
+    const startY = -150;
+
+    for (let i = 0; i < numRows; i++) {
+        for (let j = 0; j <= i; j++) {
+            createAlien(startX + j * alienWidth, startY + i * alienHeight);
+            createAlien(startX - j * alienWidth, startY + i * alienHeight); // Mirror on the left
         }
-    }    
+    }
+}
+
+// Update createInvertedPyramidAliens function
+function createInvertedPyramidAliens() {
+    const numRows = 3;
+    const alienWidth = 70;
+    const alienHeight = 30;
+    const startX = (spaceInvadersElement.clientWidth / 2) - 20;
+    const startY = -150;
+
+    for (let i = numRows - 1; i >= 0; i--) {
+        for (let j = 0; j <= i; j++) {
+            createAlien(startX + j * alienWidth, startY + (numRows - 1 - i) * alienHeight);
+            createAlien(startX - j * alienWidth, startY + (numRows - 1 - i) * alienHeight); // Mirror on the left
+        }
+    }
+}
     
+    // Update createOvalAliens function
     function createOvalAliens() {
         const numAliens = 16;
+        const alienWidth = 70;
+        const alienHeight = 30;
         const radiusX = 200;
         const radiusY = 80;
         const centerX = spaceInvadersElement.clientWidth / 2;
-        const centerY = -150; // Adjust this value to control the initial vertical position
+        const centerY = -150;
     
         for (let i = 0; i < numAliens; i++) {
             const angle = (i / numAliens) * 2 * Math.PI;
-            const x = centerX + radiusX * Math.cos(angle);
-            const y = centerY + radiusY * Math.sin(angle);
+            const x = centerX + radiusX * Math.cos(angle) - alienWidth / 2;
+            const y = centerY + radiusY * Math.sin(angle) - alienHeight / 2;
             createAlien(x, y);
         }
     }
     
+    // Update createDonutAliens function
     function createDonutAliens() {
         const numAliens = 24;
+        const alienWidth = 70;
+        const alienHeight = 30;
         const outerRadius = 150;
         const innerRadius = 80;
         const centerX = spaceInvadersElement.clientWidth / 2;
-        const centerY = -150; // Adjust this value to control the initial vertical position
+        const centerY = -150;
     
         for (let i = 0; i < numAliens; i++) {
             const angle = (i / numAliens) * 2 * Math.PI;
-            const x = centerX + outerRadius * Math.cos(angle);
-            const y = centerY + outerRadius * Math.sin(angle);
+            const x = centerX + outerRadius * Math.cos(angle) - alienWidth / 2;
+            const y = centerY + outerRadius * Math.sin(angle) - alienHeight / 2;
             createAlien(x, y);
         }
     
         for (let i = 0; i < numAliens; i++) {
             const angle = (i / numAliens) * 2 * Math.PI;
-            const x = centerX + innerRadius * Math.cos(angle);
-            const y = centerY + innerRadius * Math.sin(angle);
+            const x = centerX + innerRadius * Math.cos(angle) - alienWidth / 2;
+            const y = centerY + innerRadius * Math.sin(angle) - alienHeight / 2;
             createAlien(x, y);
         }
-    }            
+    }         
 
     function createAlien(left, top) {
         const alien = document.createElement('div');
@@ -158,6 +174,15 @@ document.addEventListener('DOMContentLoaded', function () {
         bullet.style.left = `${spaceshipX}%`;
         bulletsElement.appendChild(bullet);
         bullets.push(bullet);
+
+        playShootSound();
+    }
+
+    function playShootSound() {
+        const shootSound = document.getElementById('shootSound');
+        shootSound.volume = 0.1;
+        shootSound.currentTime = 0; // Rewind to the beginning to allow rapid successive plays
+        shootSound.play();
     }
 
     function moveBullets() {
@@ -175,21 +200,39 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function checkCollision(bullet) {
+        let collisionDetected = false;
+    
         aliens.forEach((alien, alienIndex) => {
             if (isColliding(bullet, alien)) {
                 bullet.remove();
                 bullets = bullets.filter((b) => b !== bullet);
-
+    
                 alien.remove();
                 aliens = aliens.filter((a) => a !== alien);
                 score++;
-                scoreElement.textContent = `Score: ${score}`;
+                collisionDetected = true;
+                playAlienDeathSound(); // Play the alien death sound
             }
         });
-
+    
+        if (collisionDetected) {
+            updateScore();
+        }
+    
         if (aliens.length === 0) {
             nextWave();
         }
+    }    
+    
+    function playAlienDeathSound() {
+        const alienDeathSound = document.getElementById('alienDeathSound');
+        alienDeathSound.volume = 0.1; // Adjust the volume as needed
+        alienDeathSound.currentTime = 0; // Rewind to the beginning to allow rapid successive plays
+        alienDeathSound.play();
+    }
+
+    function updateScore() {
+        scoreElement.textContent = score;
     }
 
     function nextWave() {
@@ -222,15 +265,14 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function resetGame() {
+        clearAliens(); // Clear aliens when resetting the game
         bullets.forEach((bullet) => bullet.remove());
-        aliens.forEach((alien) => alien.remove());
         bullets = [];
-        aliens = [];
         score = 0;
         lives = 3;
         livesElement.textContent = `Lives: ${lives}`;
-        scoreElement.textContent = `Score: ${score}`;
-        createAliens(waveShapes[0]); // Initial wave shape
+        updateScore();
+        createAliens(waveShapes[0]);
     }
 
     function autoShoot() {
@@ -253,5 +295,5 @@ document.addEventListener('DOMContentLoaded', function () {
     const startButton = document.getElementById('startButton');
     startButton.addEventListener('click', startGame);
 
-    resetGame(); // Initial setup when the page loads
+    resetGame();
 });
