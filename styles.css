@@ -84,10 +84,10 @@ body {
 
 .alien {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    background-color: #00ff00;
-    border-radius: 5px;
+    width: 50px; /* Adjust the width based on your alien image */
+    height: 20px; /* Adjust the height based on your alien image */
+    background-image: url('alien.png');
+    background-size: cover; /* Ensures the image covers the entire element */
 }
 
 .bullet {
