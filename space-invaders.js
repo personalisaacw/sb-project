@@ -14,6 +14,18 @@ document.addEventListener('DOMContentLoaded', function () {
     let waveShapes = ['pyramid', 'inverted-pyramid', 'oval', 'donut'];
     let gameActive = false;
 
+    function createExplosion(left, top) {
+        const explosion = document.createElement('div');
+        explosion.classList.add('explosion');
+        explosion.style.left = `${left - 25}px`;
+        explosion.style.top = `${top - 20}px`;
+        spaceInvadersElement.appendChild(explosion);
+
+        setTimeout(() => {
+            explosion.remove();
+        }, 1000);
+    }
+
     function handleMouseMove(event) {
         if (gameActive) {
             const mouseX = event.clientX / window.innerWidth;
@@ -65,36 +77,64 @@ document.addEventListener('DOMContentLoaded', function () {
         aliens = [];
     }
     
-// Update createPyramidAliens function
+// Updated createPyramidAliens function with adjusted startX
 function createPyramidAliens() {
     const numRows = 3;
     const alienWidth = 70;
     const alienHeight = 30;
-    const startX = (spaceInvadersElement.clientWidth / 2) - 20;
-    const startY = -150;
+    const spaceBetweenRows = 20;
+    
+    // Adjusted startX value
+    const startX = 410; // Change this value to your desired horizontal position
+    
+    const startY = -130;
 
-    for (let i = 0; i < numRows; i++) {
-        for (let j = 0; j <= i; j++) {
-            createAlien(startX + j * alienWidth, startY + i * alienHeight);
-            createAlien(startX - j * alienWidth, startY + i * alienHeight); // Mirror on the left
+    const rows = [
+        { numAliens: 5 },
+        { numAliens: 3 },
+        { numAliens: 1 }
+    ];
+
+    rows.forEach((row, rowIndex) => {
+        const numAliensInRow = row.numAliens;
+        const rowWidth = numAliensInRow * alienWidth + (numAliensInRow - 1) * spaceBetweenRows;
+        const rowStartX = startX - rowWidth / 2;
+
+        for (let j = 0; j < numAliensInRow; j++) {
+            const leftOffset = j * (alienWidth + spaceBetweenRows);
+            createAlien(rowStartX + leftOffset, startY + rowIndex * (alienHeight + spaceBetweenRows));
         }
-    }
+    });
 }
 
-// Update createInvertedPyramidAliens function
+
 function createInvertedPyramidAliens() {
     const numRows = 3;
     const alienWidth = 70;
     const alienHeight = 30;
-    const startX = (spaceInvadersElement.clientWidth / 2) - 20;
-    const startY = -150;
+    const spaceBetweenRows = 20;
+    
+    // Adjusted startX value
+    const startX = 410; // Change this value to your desired horizontal position
+    
+    const startY = -130;
 
-    for (let i = numRows - 1; i >= 0; i--) {
-        for (let j = 0; j <= i; j++) {
-            createAlien(startX + j * alienWidth, startY + (numRows - 1 - i) * alienHeight);
-            createAlien(startX - j * alienWidth, startY + (numRows - 1 - i) * alienHeight); // Mirror on the left
+    const rows = [
+        { numAliens: 1 },
+        { numAliens: 3 },
+        { numAliens: 5 }
+    ];
+
+    rows.forEach((row, rowIndex) => {
+        const numAliensInRow = row.numAliens;
+        const rowWidth = numAliensInRow * alienWidth + (numAliensInRow - 1) * spaceBetweenRows;
+        const rowStartX = startX - rowWidth / 2;
+
+        for (let j = 0; j < numAliensInRow; j++) {
+            const leftOffset = j * (alienWidth + spaceBetweenRows);
+            createAlien(rowStartX + leftOffset, startY + rowIndex * (alienHeight + spaceBetweenRows));
         }
-    }
+    });
 }
     
     // Update createOvalAliens function
@@ -105,7 +145,7 @@ function createInvertedPyramidAliens() {
         const radiusX = 200;
         const radiusY = 80;
         const centerX = spaceInvadersElement.clientWidth / 2;
-        const centerY = -150;
+        const centerY = -130;
     
         for (let i = 0; i < numAliens; i++) {
             const angle = (i / numAliens) * 2 * Math.PI;
@@ -123,7 +163,7 @@ function createInvertedPyramidAliens() {
         const outerRadius = 150;
         const innerRadius = 80;
         const centerX = spaceInvadersElement.clientWidth / 2;
-        const centerY = -150;
+        const centerY = -130;
     
         for (let i = 0; i < numAliens; i++) {
             const angle = (i / numAliens) * 2 * Math.PI;
@@ -149,18 +189,50 @@ function createInvertedPyramidAliens() {
         aliensElement.appendChild(alien);
     }
 
+    let moveDirection = 1; // 1 for right, -1 for left
+    let moveCounter = 0; // To track the movement distance
+    
     function moveAliens() {
         aliens.forEach((alien) => {
             const currentTop = parseFloat(alien.style.top) || 0;
+            const currentLeft = parseFloat(alien.style.left) || 0;
+    
+            // Move 10,000 pixels to the right initially
+            if (moveCounter < 10000) {
+                alien.style.left = `${currentLeft + moveDirection * 0.1}px`;
+            } else {
+                // Enter the loop after moving 10,000 pixels right
+                const loopCounter = moveCounter - 10000;
+    
+                // Move 20,000 pixels left, then 20,000 pixels right in a loop
+                if (loopCounter < 20000) {
+                    alien.style.left = `${currentLeft - 0.1}px`; // Move left
+                } else {
+                    alien.style.left = `${currentLeft + 0.1}px`; // Move right
+                }
+    
+                // Reset the loop after completing both left and right movements
+                if (loopCounter >= 40000) {
+                    moveCounter = 0;
+                }
+            }
+    
+            // Update the top position
             alien.style.top = `${currentTop + 0.1}px`;
-
+    
+            // Increment the moveCounter
+            moveCounter++;
+    
             if (currentTop > spaceInvadersElement.clientHeight - 40) {
+                // If an alien reaches the bottom, decrement lives and reset aliens
                 lives--;
                 livesElement.textContent = `Lives: ${lives}`;
                 resetAliens();
             }
         });
     }
+    
+          
 
     function resetAliens() {
         aliens.forEach((alien) => {
@@ -206,10 +278,15 @@ function createInvertedPyramidAliens() {
             if (isColliding(bullet, alien)) {
                 bullet.remove();
                 bullets = bullets.filter((b) => b !== bullet);
-    
+ 
+                createExplosion(
+                    parseFloat(alien.style.left) + alien.clientWidth / 2,
+                    parseFloat(alien.style.top) + alien.clientHeight / 2
+                );   
+
                 alien.remove();
                 aliens = aliens.filter((a) => a !== alien);
-                score++;
+                score += 10000;
                 collisionDetected = true;
                 playAlienDeathSound(); // Play the alien death sound
             }
