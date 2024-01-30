@@ -49,7 +49,7 @@ body {
     font-family: 'Quicksand', sans-serif;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     width: 50%;
-    height: 100px;
+    height: 130px;
     overflow: auto;
 }
 
@@ -64,11 +64,20 @@ body {
     overflow: hidden;
 }
 
+#lives {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 16px;
+    font-family: 'Press Start 2P', cursive; /* Add this line to use the desired font */
+    color: #ffffff; /* Change this to white */
+}
+
 .space-invaders {
     width: 800px;
     height: 600px;
-    background-color: #001f3f;
     position: relative;
+    background: url('background.jpg') center/cover no-repeat;
 }
 
 .spaceship {
@@ -90,6 +99,20 @@ body {
     background-size: cover; /* Ensures the image covers the entire element */
 }
 
+.explosion {
+    position: absolute;
+    width: 50px; /* Adjust the width based on your explosion image */
+    height: 50px; /* Adjust the height based on your explosion image */
+    background-image: url('explosion 1.png'); /* Specify the path to your explosion image */
+    background-size: cover;
+    animation: explosionAnimation 1s forwards;
+}
+
+@keyframes explosionAnimation {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); opacity: 0; }
+}
+
 .bullet {
     position: absolute;
     width: 10px;
@@ -106,6 +129,7 @@ body {
     left: 10px;
     font-size: 16px;
     color: #fff;
+    font-family: 'Press Start 2P', cursive; /* Use 'Press Start 2P' font */
 }
 
 #startButton {
